@@ -1,0 +1,3 @@
+﻿  MyForm.cpp
+  .NETFramework,Version=v4.6.1.AssemblyAttributes.cpp
+LINK : fatal error LNK1561: 진입점이 정의되어야 합니다.

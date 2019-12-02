@@ -1,0 +1,6 @@
+﻿  test.c
+d:\css\프로젝트\모의훈련_프로젝트\develop\c\test\hook\project1\test.c(30): warning C4133: '함수': 'char [256]'과(와) 'LPWSTR' 사이의 형식이 호환되지 않습니다.
+d:\css\프로젝트\모의훈련_프로젝트\develop\c\test\hook\project1\test.c(34): warning C4133: '함수': 'char [84]'과(와) 'LPCWSTR' 사이의 형식이 호환되지 않습니다.
+d:\css\프로젝트\모의훈련_프로젝트\develop\c\test\hook\project1\test.c(40): warning C4133: '함수': 'char [5]'과(와) 'LPCWSTR' 사이의 형식이 호환되지 않습니다.
+d:\css\프로젝트\모의훈련_프로젝트\develop\c\test\hook\project1\test.c(40): warning C4133: '함수': 'char *'과(와) 'LPCWSTR' 사이의 형식이 호환되지 않습니다.
+  Project1.vcxproj -> D:\CSS\프로젝트\모의훈련_프로젝트\develop\C\test\hook\x64\Debug\Project1.exe

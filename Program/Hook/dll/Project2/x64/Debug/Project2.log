@@ -1,0 +1,4 @@
+﻿  abc.cpp
+d:\css\프로젝트\모의훈련_프로젝트\develop\c\test\project2\project2\abc.cpp(28): warning C4715: 'MouseProc': 모든 제어 경로에서 값을 반환하지는 않습니다.
+d:\css\프로젝트\모의훈련_프로젝트\develop\c\test\project2\project2\abc.cpp(23): warning C4715: 'KeyboardProc': 모든 제어 경로에서 값을 반환하지는 않습니다.
+  Project2.vcxproj -> D:\CSS\프로젝트\모의훈련_프로젝트\develop\C\test\Project2\x64\Debug\Project2.dll
