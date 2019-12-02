@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <% include ../partials/head %>
+  <style>
+    input[type=submit] {
+      background-color: #f3f6f7;
+      border-style: solid;
+      color: #369;
+      padding: 5px 15px;
+      text-align: center;
+      text-decoration: none;
+      font-weight : bold;
+      display: inline-block;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+
+<body>
+  <% include ../partials/nav %>
+  <div class="container home home-about">
+    <h1>CSS Project</h1>
+    <P>피싱메일 모의훈련 보고서</p>
+    <% var selected_title = ""
+       var selected_table = ""%>
+    <div>
+      <form action="/report" method="get" style="display:inline-block">
+
+        <select id="title" name="metatable" style="border:1px solid green; width:150px; height:25px;">
+          <% for(var i=0; i < Object.keys(project).length; i++){
+                      if(Object.keys(project).length == 0){
+                        break;
+                      }
+                      var title = project[i].title
+                      var table_name = project[i].name
+                      var name = "훈련기간 : "+project[i].start2+" ~ "+project[i].end
+                      if(table == ("`" + project[i].name + "`")){ %>
+          <option value="<%= project[i].name %>" selected>
+            <% selected_title = project[i].title
+               selected_table = project[i].name%>
+
+            <% var selected_name = name %>
+            <%=title%>
+          </option>
+          <% }else{ %>
+          <option value="<%= project[i].name %>">
+            <%=title%>
+          </option>
+          <%} %>
+
+
+          <% }  %>
+        </select>
+
+
+        <input type="submit" value="테이블로 이동">
+      </form>
+
+      <h5 id="term" style="display:inline-block; margin-left:20px;">
+        <%= selected_name %>
+      </h5>
+    </div>
+
+
+    <div width="1000px" height="600px" style=" white-space:nowrap; float : left; border-bottom : 3px solid black; position : relative;">
+
+
+      <%
+          selected_table = selected_table.substring(selected_table.length-1, selected_table.length)
+          selected_table = parseInt(selected_table)
+
+          var title = selected_title + " 프로젝트 시행( 기준 : "
+          var criteria = new Array()
+
+          if(project ==""){
+
+          }else{
+            for(var j = 0; j < Object.keys(tables[tables.length - selected_table][0]).length; j++){ //기준 뽑아내기
+              if(Object.keys(tables[tables.length - selected_table][0])[j] == 'e_mail_address'){break;}
+              criteria.push(Object.keys(tables[tables.length - selected_table][0])[j])
+              title += Object.keys(tables[tables.length - selected_table][0])[j] + ", "
+            }
+            title = title.slice(0, title.length-2)
+            title += " )"
+
+            var rate = 0;
+            for(var j = 0; j < tables[tables.length - selected_table].length; j++){
+
+              if(tables[tables.length - selected_table][j]['confirm'] == 1){
+                rate++;
+              }
+            }
+
+        %>
+      <canvas id="kind_chart" width="400px" height="400px" style="overflow : auto;display:inline-block; margin-left:20px; "></canvas>
+      <canvas id="all_data" width="400px" height="400px" style="overflow : auto;display:inline-block; margin-left:20px;"></canvas>
+      <canvas id="check_rate" width="400" height="300" style="display:inline; margin-bottom: 50px;"></canvas>
+      <div width="300px" height="400px" style="overflow : auto; display:inline-block; float : center; margin: 0 auto; text-align: center; position : absolute; top: 195px; left : 1010px;">
+        <p style='color : black;'>
+          <font size='6'>
+            <%= parseInt(rate*100/tables[tables.length - selected_table].length) + "%" %>
+          </font>
+        </p>
+        <p style='color : white;'>
+          <font size='13'></font>
+        </p>
+        <p style='color : white;'>
+          <font size='10'></font>
+        </p>
+        <p style='color : white;'>
+          <font size='10'></font>
+        </p>
+      </div>
+
+      <script>
+      <% var sub_criteria = new Array() %>
+        var ctx01 = document.getElementById("kind_chart");
+        var trend = new Chart(ctx01, {
+          type: 'bar',
+          data: {
+            labels: [
+              <%
+              table = table.substring(1, table.length -1)
+              for(var x =0; x < tables.length; x++){
+
+              }
+              var all_criteria = new Array()
+              for(var x=0; x<(criteria.length); x++){
+                  var sub_criteria = new Array()
+                  //console.log(tables[tables.length - selected_table])
+
+                  for(var y = 0; y <tables[tables.length - selected_table].length; y++ ){
+                    //console.log(tables.length - selected_table)
+                    //console.log(tables[tables.length - selected_table][y][criteria[x]])
+                    if(sub_criteria.indexOf(tables[tables.length - selected_table][y][criteria[x]]) != -1){continue;}
+                    sub_criteria.push(tables[tables.length - selected_table][y][criteria[x]])
+
+                  }
+
+                  sub_criteria =sub_criteria.slice().sort(function(a,b){return a - b}).reduce(function(a,b){if (a.slice(-1)[0] !== b) a.push(b);return a;},[]);
+                  all_criteria = all_criteria.concat(sub_criteria)
+                }
+                for(var x = 0; x < all_criteria.length-1; x++){%>
+              '<%=all_criteria[x]%>',
+              <% } %>
+              '<%=all_criteria[all_criteria.length-1]%>'
+            ],
+
+            datasets: [{
+              label: '<%=title %>',
+              <%for(var k = 0; k < criteria.length; k++){
+
+              }
+              %>
+              data: [
+                <%
+                var data_set = new Array()
+                for(var x=0; x<(criteria.length); x++){
+
+                    for(var y = 0; y <tables[tables.length - selected_table].length; y++ ){
+
+                      if(sub_criteria.indexOf(tables[tables.length - selected_table][y][criteria[x]]) != -1){continue;}
+                      sub_criteria.push(tables[tables.length - selected_table][y][criteria[x]])
+                      console.log(y)
+                    }
+                    sub_criteria =sub_criteria.slice().sort(function(a,b){return a - b}).reduce(function(a,b){if (a.slice(-1)[0] !== b) a.push(b);return a;},[]);
+
+                    for(var y = 0; y < sub_criteria.length; y++){
+                      var count = 0;
+                      for(var z = 0; z < tables[tables.length - selected_table].length; z++){
+                        if(tables[tables.length - selected_table][z][criteria[x]] == sub_criteria[y] && tables[tables.length - selected_table][z]['method_con'] == 1){
+                          count++
+                        }
+                      }
+                      data_set.push(count)
+                    }
+
+                  }
+                  for(var x = 0; x < data_set.length-1; x++){%>
+                '<%=data_set[x]%>',
+                <% } %>
+                '<%=data_set[data_set.length-1]%>'
+              ],
+              backgroundColor: [
+                <%for(var x = 0; x < sub_criteria.length; x++){%>
+                  '#cff0da',
+                <%}%>
+
+              ],
+              borderColor: [
+                'rgba(255,99,132,1)'
+              ],
+              pointBackgroundColor: '#f00',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            animation: {
+              animateScale: true
+            },
+            responsive: false,
+            scales: {
+              xAxes: [{
+                gridLines: {
+                  display: false,
+                  color: "black"
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: "분류 기준",
+                  fontColor: "green"
+                }
+              }],
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true,
+                  stepSize: 1,
+                  min: 0
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: "감염수", //y축 라벨
+                  fontColor: "green"
+                }
+
+              }]
+            }
+          }
+        });
+
+        var ctx02 = document.getElementById("all_data");
+        var trend = new Chart(ctx02, {
+          type: 'bar',
+          data: {
+            labels: [
+              <%
+              var count_tables = new Array()
+              for(var x=0; x<(tables.length); x++){
+                  count_tables.push(String(x+1) + "회차")
+                }
+                for(var x = 0; x < count_tables.length-1; x++){%>
+              '<%=count_tables[x]%>',
+              <% } %>
+              '<%=count_tables[count_tables.length-1]%>'
+            ],
+
+            datasets: [{
+              label: '반복 훈련 결과',
+              <%for(var k = 0; k < criteria.length; k++){
+
+              }
+              %>
+              data: [
+                <%
+
+                var data_set = new Array()
+                for(var x=0; x<tables.length; x++){
+                  data_set[x] = 0;
+                    for(var y = 0; y <tables[x].length; y++ ){
+                      if(tables[x][y]['method_con'] == 1){
+                        data_set[x] += 1
+                      }
+
+
+                    }
+
+
+                  }
+                  for(var x = tables.length-1; x > -1; x--){%>
+                '<%=data_set[x]%>',
+                <% } %>
+                '<%=data_set[data_set.length-1]%>'
+              ],
+              backgroundColor: [
+                '#3ac569',
+                <%for(var x = 0; x < tables.length-1; x++){%>
+                  '#88dba3',
+                <%}%>
+              ],
+              borderColor: [
+                'black'
+              ],
+              pointBackgroundColor: '#f00',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            animation: {
+              animateScale: true
+            },
+            responsive: false,
+            scales: {
+              xAxes: [{
+                gridLines: {
+                  display: false,
+                  color: "black"
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: "분류 기준",
+                  fontColor: "green"
+                }
+              }],
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true,
+                  stepSize: 1,
+                  min: 0
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: "감염수", //y축 라벨
+                  fontColor: "green"
+                }
+
+              }]
+            }
+          }
+        });
+
+        var ctx03 = document.getElementById("check_rate");
+        var tmethod = new Chart(ctx03, {
+          type: 'doughnut',
+          data: {
+
+            datasets: [{
+              data: [
+                <% for(var i=0; i< 1; i++){ %>
+                <%= parseInt(rate*100/tables[tables.length - selected_table].length) %>,
+                <% } %>
+                <%=(100 - parseInt(rate*100/tables[tables.length - selected_table].length))%>
+              ],
+              backgroundColor: [
+                '#fd999a',
+                '#fec8c9',
+              ],
+              hoverbackgroundColor: [
+                '#FF6384',
+                '#36A2EB'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            title: {
+              display: true,
+              text: '< 수신확인률 >'
+            },
+            legend: {
+              position: 'right',
+            },
+            responsive: false,
+            events: false,
+
+          }
+        });
+      </script>
+
+    </div>
+    <hr style="border : 10px; height : 3px; background : black;">
+    <div>
+      <%  var hitArray = []; // 감염자 비율
+        var hitmethod = []; // 감염자 방식(중복)
+        var methodLabel = []; //method 방식(중복제외)
+        var methodSum = []; //method 방식에 대한 합
+        var methodArray = []; //method 방식에 대한 비율
+        var total = 0;
+
+        for(var i=0; i<dataArr.length; i++){
+          var hit = 0;
+          for(var j=0; j<dataArr[i].length; j++){
+            if(dataArr[i][j].method_con == '1'){
+              hit++;
+            }
+          }
+
+          var method = dataArr[i][0].method;
+          if(method=='monitorControl' || method=='ransomware' || method=='video')
+            method = '첨부파일';
+
+          if(!methodLabel.includes(method)){
+            methodLabel.push(method);
+          }
+
+          hitArray.push((hit/dataArr[i].length*100).toFixed(2));
+          hitmethod.push(method);
+        }
+        //각 방식의 비율 구하기
+        for(var j=0; j<methodLabel.length; j++){
+          var methodhit = 0;
+          var hitNum = 0;
+          for(var l=0; l<hitmethod.length; l++){
+            if(methodLabel[j] == hitmethod[l]){
+              methodhit += parseFloat(hitArray[l]);
+              hitNum++;
+            }
+          }
+          var value = (methodhit/hitNum).toFixed(2);
+          total += parseFloat(value);
+          methodSum.push(value);
+        }
+
+        for(var j=0; j<methodSum.length; j++){
+          methodArray.push((methodSum[j]/total*100).toFixed(2));
+        }
+      %>
+
+      <canvas id="firstTrend" width="500" height="300" style="display:inline; margin-left:20px;"></canvas>
+      <canvas id="totalmethod" width="500" height="300" style="display:inline; margin-left:100px;"></canvas>
+      <script>
+        var ctx = document.getElementById("firstTrend");
+        var trend = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: [
+              <% for(var i=0; i<(tableArr.length-1); i++){ %>
+              '<%=tableArr[(tableArr.length-1)-i]%>',
+              <% } %>
+              '<%=tableArr[0]%>'
+            ],
+            datasets: [{
+              label: '< 최근 5번의 훈련(초기훈련 기준) - 감염자 비율(%) >',
+              data: [
+                <% for(var i=0; i<(hitArray.length-1); i++){ %>
+                <%=hitArray[(hitArray.length-1)-i]%>,
+                <% } %>
+                <%=hitArray[0]%>
+              ],
+              backgroundColor: [
+                'rgba(0, 0, 0, 0)'
+              ],
+              borderColor: [
+                'rgba(255,99,132,1)'
+              ],
+              pointBackgroundColor: '#f00',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            animation: {
+              animateScale: true
+            },
+            responsive: false,
+            scales: {
+              xAxes: [{
+                gridLines: {
+                  display: false,
+                  color: "black"
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: "훈련일자",
+                  fontColor: "green"
+                }
+              }],
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true,
+                  max: 100,
+                  min: 0
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: "percentage(%)",
+                  fontColor: "green"
+                }
+
+              }]
+            }
+          }
+        });
+
+        var ctx2 = document.getElementById("totalmethod");
+        var tmethod = new Chart(ctx2, {
+          type: 'pie',
+          data: {
+            labels: [
+              <% for(var i=0; i<(methodLabel.length-1); i++){ %>
+              '<%=methodLabel[(methodLabel.length-1)-i]%>',
+              <% } %>
+              '<%=methodLabel[0]%>'
+            ],
+            datasets: [{
+              data: [
+                <% for(var i=0; i<(methodArray.length-1); i++){ %>
+                <%=methodArray[(methodArray.length-1)-i]%>,
+                <% } %>
+                <%=methodArray[0]%>
+              ],
+              backgroundColor: [
+                '#FF6384',
+                '#36A2EB',
+                '#FFCE56'
+              ],
+              hoverbackgroundColor: [
+                '#FF6384',
+                '#36A2EB',
+                '#FFCE56'
+              ],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            title: {
+              display: true,
+              text: '< 최근 5번의 훈련(초기훈련 기준) - 감염된 방식 비율(%) >'
+            },
+            legend: {
+              position: 'right',
+            },
+            responsive: false,
+            events: false,
+            animation: {
+              duration: 500,
+              easing: "easeOutQuart",
+              onComplete: function() {
+                var ctx = this.chart.ctx;
+                ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontFamily, 'normal', Chart.defaults.global.defaultFontFamily);
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+
+                this.data.datasets.forEach(function(dataset) {
+                  for (var i = 0; i < dataset.data.length; i++) {
+                    var model = dataset._meta[Object.keys(dataset._meta)[0]].data[i]._model,
+                      total = dataset._meta[Object.keys(dataset._meta)[0]].total,
+                      mid_radius = model.innerRadius + (model.outerRadius - model.innerRadius) / 2,
+                      start_angle = model.startAngle,
+                      end_angle = model.endAngle,
+                      mid_angle = start_angle + (end_angle - start_angle) / 2;
+
+                    var x = mid_radius * Math.cos(mid_angle);
+                    var y = mid_radius * Math.sin(mid_angle);
+
+                    ctx.fillStyle = '#fff';
+                    if (i == 3) {
+                      ctx.fillStyle = '#444';
+                    }
+                    ctx.fillText(dataset.data[i] + '%', model.x + x, model.y + y);
+                  }
+                });
+              }
+            }
+          }
+        });
+      </script>
+    </div>
+    <% } %>
+  </div>
+</body>
+
+</html>

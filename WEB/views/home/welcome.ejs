@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <% include ../partials/head %>
+</head>
+<style>
+    img#imgA{
+        animation: pop ease-in-out 2.2s;
+    }
+
+    img#imgB{
+        animation: pop ease-in-out 2.2s;
+        animation-delay: 1s; 
+    }
+
+    img#imgC{
+        animation: pop ease-in-out 2.2s;
+        animation-delay: 2s;
+    }
+
+    @keyframes pop{
+        from{transform: scale(1);}
+        10%{transform: scale(1);}
+        50%{transform: scale(1);}
+        75%{transform: scale(1.2);}
+        to{transform: rotate(1);}
+    }
+
+
+</style>
+<body>
+    <% include ../partials/nav %>
+<div class="container home home-welcome">
+    <div class="jumbotron" style="margin-bottom:80px;">
+        <h1>CSS Project</h1>
+        <P>악성 메일 모의 훈련 점검 관리자 페이지 </p>
+    </div>
+    <p style="display:inline-block;">
+        <span width="200px" style="margin-left:50px;">< 메일보내기 ></span><br />
+        <img id="imgA" src="/img1" width="200px" height="230px" style="border:2px solid green; margin-top:10px;" />
+        
+    </p>
+    <p style="font-size:40px; display:inline-block; margin:20px;">
+        →<br />
+    <p style="display:inline-block;">
+        <span width="200px" style="margin-left:60px;">< 메일현황 ></span><br />
+        <img id="imgB" src="/img2" width="200px" height="230px" style="border:2px solid green; margin-top:10px;" /> 
+    </p>
+    <p style="font-size:40px; display:inline-block; margin:20px;">
+        →<br />
+    </p>
+    <p style="display:inline-block;">
+        <span width="200px" style="margin-left:70px;">< 보고서 ></span><br />
+        <img id="imgC" src="/img3" width="200px" height="230px" style="border:2px solid green; margin-top:10px;" />
+    </p>
+    <div style="display:inline-block; float:right; border-left:1px solid black; border-left-style: dashed; padding-left: 45px;">
+    	<h4 style="text-align: right; margin: 5px 60px;">< 영상 미시청자 ></h4>
+    	<form style="float:right;" action="/welcome" method="post">
+    		<div style="border:1px solid; width:250px; height:200px; overflow:auto; ">
+    			<%
+    				for(var i=0; i<noName.length; i++){
+    					var chValue = noName[i].e_mail_address;
+    					var chName = noName[i].name+' ('+chValue+')';
+				%>
+				<input type='checkbox' name='chList[]' value='<%= chValue%>' style='margin-left: 10px;'/><%= chName%><br />
+    			<%  } %>    			
+    		</div>
+    		<input type="submit" value="초기화" style="margin: 5px 100px; "/>
+    	</form>
+    </div>
+</div>
+</body>
+</html>

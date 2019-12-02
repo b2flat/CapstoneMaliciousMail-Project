@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <% include ../partials/head %>
+    <style>
+        input[type=submit] {
+            background-color: #f3f6f7;
+            border-style: solid;
+            color: #369;
+            padding: 5px 15px;
+            text-align: center;
+            text-decoration: none;
+            font-weight : bold;
+            display: inline-block;
+            font-size: 13px;
+        }
+        table{
+            text-align: center;
+            border-collapse: collapse;
+            line-height: 1.5;
+
+        }
+        th {
+            padding: 10px;
+            font-weight: bold;
+            vertical-align: top;
+            color: #369;
+            border-bottom: 3px solid #036;
+            text-align: center;
+        }
+        th {
+            width: 150px;
+            padding: 10px;
+            font-weight: bold;
+            vertical-align: top;
+            border-bottom: 1px solid #ccc;
+            background: #f3f6f7;
+            text-align: center;
+        }
+        td {
+            width: 350px;
+            padding: 10px;
+            vertical-align: top;
+            border-bottom: 1px solid #ccc;
+            text-align: center;
+        }
+        tr:hover {background-color: #f5f5f5;}
+        /*tr:hover {background-color: #f5f5f5;}*/
+        /*th {*/
+        /*background-color: #76b852;*/
+        /*color: white;*/
+        /*}*/
+
+    </style>
+</head>
+
+<body>
+<% include ../partials/nav %>
+<div class="container home home-about">
+    <h1>CSS Project</h1>
+    <P>피싱메일 모의훈련 점검 현황</p>
+    <div>
+        <form action="/mailNow" method="get" style="display:inline-block">
+            <select id="title" name="metatable" style="border:1px solid green; width:150px; height:25px;">
+                <% for(var i=0; i < Object.keys(project).length; i++){
+                    if(Object.keys(project).length == 0){
+                        break;
+                    }
+                    var title = project[i].title
+                    var table_name = project[i].name
+                    var name = "훈련기간 : "+project[i].start2+" ~ "+project[i].end
+                if(table == ("`" + project[i].name + "`")){ %>
+                <option value="<%= project[i].name %>" selected>
+                    <% var selected_name = name %>
+                    <%=title%>
+                </option>
+                <% }else{ %>
+                <option value="<%= project[i].name %>">
+                    <%=title%>
+                </option>
+                <%} %>
+
+
+                <% }  %>
+            </select>
+
+            <input type="submit" value="테이블로 이동">
+        </form>
+
+        <h5 id="term" style="display:inline-block; margin-left:20px;">
+            <%= selected_name %>
+        </h5>
+    </div>
+    <form action="post">
+        <!--- 가장 큰 틀 --->
+        <div style="text-align : right;">
+            <p></p>
+            <p>-감염 여부 및 수신 확인-</p>
+            <p>(0 : NO) (1 : YES)</p>
+        </div>
+        <div style="margin-left: 10px; overflow : hidden; float:left; padding : 5px;">
+
+            <%for(var i = 0; i < criteria.length; i++){
+
+            %>
+            <div style="margin : 10px;  float:left; padding : 5px; width : 1100px; margin-bottom:50px">
+                <!--- 분류 기준을 보여주는 div--->
+                <div display: inline-block; style="width : 25%; height : 100%; float : left; border-top: 1px solid #000000; border-bottom: 1px solid #000000; margin-top : 10px; width : 100%; text-align:center;">
+                    <P style="color:#000000; text-align:center; font-size : 18px; font-weight : bold;">
+                        <% var show_criteria = "";
+                            if(criteria[i] == ""){
+                                show_criteria = "전체"
+                            }else{
+                                show_criteria = "기준 : " + criteria[i]
+                            }%>
+                        <%= show_criteria %>
+                    </p>
+                </div>
+                <!--- 세부 분류기준 큰틀으로 생성 --->
+                <div display: inline-block; style="float:right; overflow : hidden; width : 100%">
+                    <!--- 세부기준으로 for문으로 동적 테이블 생성--->
+                    <!--- 세부 기준을 detail에 넣는 단계--->
+                    <% var detail = new Array()
+                        detail.push(result[0][criteria[i]])
+
+                        for(var a = 1; a < result.length; a++){
+
+                            if(detail.indexOf(result[a][criteria[i]]) == -1){
+
+                                detail.push(result[a][criteria[i]])
+                            }
+                        }
+                        detail.sort()
+
+                    for(var a = 0; a < detail.length; a++){ %>
+                    <!--- 세부기준으로 생성하는 div 태그--->
+                    <div display: inline-block; style="height : 100%; overflow : auto; float : left; margin-top : 10px; padding : 5px; width : 100%">
+                        <P style="color:#000000; font-size : 16px; font-weight : bold;"><%= detail[a] %></p>
+                        <table>
+                            <!--- key 값을 받아서 넣어서 첫 th구성하는 것에 사용--->
+                            <% var key = String(Object.keys(result[0]))
+                                key= key.split(",")%>
+                            <tr>
+                                <% for(var j = 0; j < Object.keys(result[0]).length; j++){
+                                    var show_key = key[j]
+                                    if(show_key == "com_name"){
+                                        show_key = "컴퓨터이름"
+                                    }else if(show_key == "method"){
+                                        show_key = "훈련 방식"
+                                    }else if(show_key == "method_con"){
+                                        show_key = "감염 여부"
+                                    }else if(show_key == "confirm"){
+                                        show_key = "수신 확인"
+                                    }%>
+                                <th>
+                                    <%= show_key %>
+                                </th>
+                                <% } %>
+                            </tr>
+                            <!--- for문을 이용해서 행 구성--->
+                            <% for(var j = 0; j < result.length; j++){
+                                if(result[j][criteria[i]] != detail[a]){
+                                    continue;
+                                }%>
+                            <tr>
+                                <!— for문을 이용한 속성 구성—>
+                                <% for(var k = 0; k < Object.keys(result[0]).length; k++){
+                                    var key_value = key[k] %>
+                                <td><%= result[j][key_value] %></td>
+                                <% } %>
+                            </tr>
+                            <% } %>
+                        </table>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+            <% } %>
+        </div>
+    </form>
+</div>
+<script>
+    function post_data(){
+        var form = document.metatable;
+
+        form.submit();
+    }
+
+</script>
+</body>
+
+</html>
